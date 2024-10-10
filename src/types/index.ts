@@ -32,6 +32,7 @@ export interface Answer {
   value: string;
 }
 
+
 declare module 'next-auth' {
   interface Session {
     user: User;
