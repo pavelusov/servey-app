@@ -58,7 +58,7 @@ export default function HomePage() {
         ) : (
           <Box sx={{ mt: 2 }}>
             <Typography variant="body1" gutterBottom>
-              Please log in or sign up to take surveys.
+              Пожалуйста войдите или зарегистрируйтесь, чтобы пройти опрос
             </Typography>
             <Button component={Link} href="/login" variant="contained" color="primary" sx={{ mr: 2 }}>
               Вход

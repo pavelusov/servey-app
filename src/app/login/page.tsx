@@ -19,7 +19,7 @@ export default function LoginPage() {
       if (result?.error) {
         console.error('Login failed:', result.error);
       } else {
-        router.push('/dashboard');
+        router.push('/admin');
       }
     } catch (error) {
       console.error('Error during login:', error);
