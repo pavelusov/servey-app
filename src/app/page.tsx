@@ -1,95 +1,74 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { Container, Typography, Box, Button, List, ListItem, ListItemText, Paper } from '@mui/material';
+import Link from 'next/link';
+import { Survey } from '@/types';
+
+export default function HomePage() {
+  const { data: session, status } = useSession();
+  const [surveys, setSurveys] = useState<Survey[]>([]);
+
+  useEffect(() => {
+    const fetchSurveys = async () => {
+      try {
+        const response = await fetch('/api/surveys');
+        if (response.ok) {
+          const data = await response.json();
+          setSurveys(data);
+        } else {
+          console.error('Failed to fetch surveys');
+        }
+      } catch (error) {
+        console.error('Error fetching surveys:', error);
+      }
+    };
+
+    fetchSurveys();
+  }, []);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <Container maxWidth="md">
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Опросы
+        </Typography>
+        {status === 'authenticated' ? (
+          <>
+            <Typography variant="subtitle1" gutterBottom>
+              Приветсвуем, {session.user?.name}! Пройдите опросы:
+            </Typography>
+            <List>
+              {surveys.map((survey) => (
+                <Paper key={survey.id} elevation={2} sx={{ mb: 2 }}>
+                  <ListItem
+                    secondaryAction={
+                      <Button component={Link} href={`/surveys/${survey.id}`} variant="contained" color="primary">
+                        Пройти опрос
+                      </Button>
+                    }
+                  >
+                    <ListItemText primary={survey.title} />
+                  </ListItem>
+                </Paper>
+              ))}
+            </List>
+          </>
+        ) : (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body1" gutterBottom>
+              Пожалуйста войдите или зарегистрируйтесь, чтобы пройти опрос
+            </Typography>
+            <Button component={Link} href="/login" variant="contained" color="primary" sx={{ mr: 2 }}>
+              Вход
+            </Button>
+            <Button component={Link} href="/signup" variant="outlined" color="primary">
+              Регистрация
+            </Button>
+          </Box>
+        )}
+      </Box>
+    </Container>
   );
 }

@@ -27,7 +27,7 @@ export default function SignupPage() {
         if (result?.error) {
           console.error('Login after signup failed:', result.error);
         } else {
-          router.push('/dashboard');
+          router.push('/admin');
         }
       } else {
         console.error('Signup failed');
